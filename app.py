@@ -16,10 +16,10 @@ app = Flask(__name__)
 load_dotenv()
 
 PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
-OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
+DEEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["DEEPSEEK_API_KEY"] = DEEEPSEEK_API_KEY
 
 
 embeddings = download_hugging_face_embeddings()
@@ -36,7 +36,15 @@ docsearch = PineconeVectorStore.from_existing_index(
 
 retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":3})
 
-chatModel = ChatOpenAI(model="gpt-4o")
+OPENROUTER_API_KEY = "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"  # Replace this!
+
+chatModel = ChatOpenAI(
+    model="deepseek/deepseek-chat",
+    openai_api_base="https://openrouter.ai/api/v1",
+    openai_api_key=OPENROUTER_API_KEY,
+    temperature=0.7,
+)
+
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
